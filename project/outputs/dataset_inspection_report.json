@@ -1,0 +1,50 @@
+{
+  "shape": [
+    1200,
+    12
+  ],
+  "target_col": "target",
+  "id_cols": [
+    "patient_id"
+  ],
+  "numeric_cols": [
+    "age",
+    "creatinine",
+    "LYVE1",
+    "REG1B",
+    "TFF1",
+    "plasma_CA19_9",
+    "REG1A"
+  ],
+  "categorical_cols": [
+    "sex",
+    "sample_origin",
+    "patient_cohort"
+  ],
+  "missing_counts": {
+    "age": 18,
+    "creatinine": 22,
+    "LYVE1": 27,
+    "REG1B": 33,
+    "TFF1": 32,
+    "plasma_CA19_9": 394,
+    "REG1A": 607
+  },
+  "missing_pct": {
+    "age": 1.5,
+    "creatinine": 1.83,
+    "LYVE1": 2.25,
+    "REG1B": 2.75,
+    "TFF1": 2.67,
+    "plasma_CA19_9": 32.83,
+    "REG1A": 50.58
+  },
+  "class_counts": {
+    "0": 984,
+    "1": 216
+  },
+  "class_pct": {
+    "0": 82.0,
+    "1": 18.0
+  }
+}

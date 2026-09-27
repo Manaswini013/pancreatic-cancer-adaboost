@@ -1,0 +1,51 @@
+{
+  "target_col": "target",
+  "numeric_cols": [
+    "age",
+    "creatinine",
+    "LYVE1",
+    "REG1B",
+    "TFF1",
+    "plasma_CA19_9",
+    "REG1A"
+  ],
+  "categorical_cols": [
+    "sex",
+    "sample_origin",
+    "patient_cohort"
+  ],
+  "categorical_values": {
+    "sex": [
+      "F",
+      "M"
+    ],
+    "sample_origin": [
+      "LIV",
+      "LON",
+      "SPA",
+      "UCL"
+    ],
+    "patient_cohort": [
+      "Cohort1",
+      "Cohort2"
+    ]
+  },
+  "best_params": {
+    "classifier__estimator": "DecisionTreeClassifier(max_depth=1)",
+    "classifier__learning_rate": "0.5",
+    "classifier__n_estimators": "200",
+    "feature_select__k": "8"
+  },
+  "cv_mean_roc_auc": 0.9701516947986967,
+  "cv_std_roc_auc": 0.009638565150541517,
+  "test_metrics": {
+    "model": "AdaBoost (tuned)",
+    "accuracy": 0.9125,
+    "precision": 0.72,
+    "recall_sensitivity": 0.8372093023255814,
+    "f1": 0.7741935483870968,
+    "specificity": 0.9289340101522843,
+    "roc_auc": 0.9670641010506433
+  },
+  "best_overall_model_on_test": "AdaBoost (tuned)"
+}

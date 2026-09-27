@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Pancreatic Cancer Detection - Research Prototype</title>
+<style>
+  body { font-family: Arial, Helvetica, sans-serif; background:#f4f6f8; margin:0; padding:0; color:#1f2937; }
+  .container { max-width: 760px; margin: 30px auto; background:#fff; border-radius:10px;
+               box-shadow: 0 2px 10px rgba(0,0,0,0.08); padding: 28px 32px 36px; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  .subtitle { color:#6b7280; font-size: 14px; margin-bottom: 18px; }
+  .disclaimer { background:#fff7ed; border:1px solid #fdba74; color:#9a3412;
+                padding: 12px 14px; border-radius:8px; font-size: 13px; margin-bottom: 22px; }
+  fieldset { border:1px solid #e5e7eb; border-radius:8px; padding: 14px 18px; margin-bottom:16px; }
+  legend { font-weight:600; font-size:14px; padding:0 6px; color:#374151; }
+  label { display:block; font-size:13px; margin-top:10px; margin-bottom:4px; color:#374151; }
+  input[type=number], select {
+     width:100%; padding:7px 8px; border:1px solid #d1d5db; border-radius:6px; font-size:14px;
+     box-sizing: border-box;
+  }
+  button { margin-top:20px; background:#1d4ed8; color:#fff; border:none; padding:11px 22px;
+           border-radius:8px; font-size:15px; cursor:pointer; }
+  button:hover { background:#1e40af; }
+  .result { margin-top: 24px; padding:16px 18px; border-radius:8px; }
+  .result.positive { background:#fef2f2; border:1px solid #fca5a5; }
+  .result.negative { background:#f0fdf4; border:1px solid #86efac; }
+  .result h2 { margin:0 0 6px; font-size:17px; }
+  .error { background:#fef2f2; border:1px solid #fca5a5; color:#991b1b; padding:10px 14px; border-radius:8px; }
+  table { width:100%; border-collapse: collapse; margin-top:8px; font-size:13px; }
+  td, th { padding:5px 8px; border-bottom:1px solid #e5e7eb; text-align:left; }
+  .metrics { font-size:12px; color:#6b7280; margin-top:26px; }
+  .contrib-pos { color:#b91c1c; }
+  .contrib-neg { color:#15803d; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Pancreatic Cancer Detection - Clinical Decision-Support Prototype</h1>
+  <div class="subtitle">AdaBoost model trained on synthetic urinary-biomarker clinical data</div>
+
+  <div class="disclaimer">
+    <strong>Disclaimer:</strong> This tool is a research / decision-support prototype built
+    for a final-year AI/ML project. It is trained on <strong>synthetic</strong> data, not real
+    patient records, and must <strong>never</strong> be used to make actual medical or
+    diagnostic decisions. Always consult a qualified healthcare professional.
+  </div>
+
+  {% if error %}
+    <div class="error">{{ error }}</div>
+  {% endif %}
+
+  <form method="POST">
+    <fieldset>
+      <legend>Biomarkers &amp; demographics</legend>
+      {% for col in numeric_cols %}
+        <label for="{{ col }}">{{ col }}</label>
+        <input type="number" step="any" name="{{ col }}" id="{{ col }}"
+               placeholder="leave blank if unknown / not measured"
+               value="{{ request.form.get(col, '') }}">
+      {% endfor %}
+    </fieldset>
+
+    <fieldset>
+      <legend>Categorical / clinical metadata</legend>
+      {% for col in categorical_cols %}
+        <label for="{{ col }}">{{ col }}</label>
+        <select name="{{ col }}" id="{{ col }}">
+          <option value="">-- unknown --</option>
+          {% for v in categorical_values[col] %}
+            <option value="{{ v }}" {% if request.form.get(col) == v %}selected{% endif %}>{{ v }}</option>
+          {% endfor %}
+        </select>
+      {% endfor %}
+    </fieldset>
+
+    <button type="submit">Get prediction</button>
+  </form>
+
+  {% if prediction %}
+    <div class="result {{ 'positive' if 'Cancer-suspicious' in prediction else 'negative' }}">
+      <h2>Result: {{ prediction }}</h2>
+      <p>Model estimated probability of pancreatic cancer: <strong>{{ probability }}%</strong></p>
+
+      {% if contributions %}
+        <table>
+          <tr><th>Feature</th><th>Contribution (SHAP value)</th></tr>
+          {% for name, val in contributions %}
+            <tr>
+              <td>{{ name }}</td>
+              <td class="{{ 'contrib-pos' if val > 0 else 'contrib-neg' }}">
+                {{ '%.4f' | format(val) }} {{ '(pushes toward Cancer)' if val > 0 else '(pushes toward Non-Cancer)' }}
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="metrics">
+    Model held-out test performance (synthetic data): Accuracy {{ '%.3f' | format(test_metrics.accuracy) }},
+    Precision {{ '%.3f' | format(test_metrics.precision) }},
+    Recall/Sensitivity {{ '%.3f' | format(test_metrics.recall_sensitivity) }},
+    F1 {{ '%.3f' | format(test_metrics.f1) }},
+    Specificity {{ '%.3f' | format(test_metrics.specificity) }},
+    ROC-AUC {{ '%.3f' | format(test_metrics.roc_auc) }}.
+  </div>
+</div>
+</body>
+</html>
